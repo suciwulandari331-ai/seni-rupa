@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detektif Seni Rupa - Game Interaktif Kelas 5 SD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        quicksand: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            purple: '#6D28D9',
+                            pink: '#EC4899',
+                            yellow: '#F59E0B',
+                            teal: '#0D9488',
+                            blue: '#2563EB',
+                            dark: '#1E1B4B'
+                        }
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 2s infinite',
+                        'pulse-glow': 'pulseGlow 2s infinite alternate',
+                        'float': 'float 3s ease-in-out infinite'
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%': { boxShadow: '0 0 15px rgba(236, 72, 153, 0.4)' },
+                            '100%': { boxShadow: '0 0 30px rgba(236, 72, 153, 0.8)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #2e1065 0%, #4c1d95 50%, #831843 100%);
+            min-height: 100vh;
+        }
+        h1, h2, h3, .font-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #8b5cf6;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="text-slate-800 flex flex-col justify-between p-3 md:p-6 min-h-screen selection:bg-pink-300">
+
+    <!-- TOP BAR / HEADER -->
+    <header class="max-w-4xl mx-auto w-full mb-4">
+        <div class="glass-card rounded-2xl p-4 shadow-xl flex items-center justify-between border-b-4 border-purple-400">
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-tr from-yellow-400 to-amber-500 text-white p-3 rounded-2xl shadow-md transform -rotate-3">
+                    <i class="fa-solid fa-magnifying-glass text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold font-heading text-purple-900 leading-tight">Detektif Seni Rupa</h1>
+                    <p class="text-xs md:text-sm font-semibold text-purple-600">Seni Rupa Kelas 5 SD • Unsur & Prinsip Desain</p>
+                </div>
+            </div>
+
+            <!-- Sound & Stats Header Toggle -->
+            <div id="top-stats" class="hidden sm:flex items-center gap-4 bg-purple-50 px-4 py-2 rounded-xl border border-purple-200">
+                <div class="flex items-center gap-1.5 text-amber-500 font-bold font-heading">
+                    <i class="fa-solid fa-star text-lg animate-pulse"></i>
+                    <span id="score-display-top">0</span>
+                </div>
+                <div class="h-5 w-px bg-purple-200"></div>
+                <button id="sound-btn" onclick="toggleSound()" class="text-purple-600 hover:text-purple-800 transition">
+                    <i id="sound-icon" class="fa-solid fa-volume-high text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="app-container" class="max-w-4xl mx-auto w-full flex-grow flex flex-col justify-center">
+
+        <!-- SCREEN 1: WELCOME & AVATAR SELECT -->
+        <section id="screen-welcome" class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl border-t-8 border-yellow-400 text-center animate-fade-in">
+            <div class="inline-block bg-yellow-100 text-yellow-800 px-4 py-1.5 rounded-full font-bold text-sm mb-4 border border-yellow-300">
+                🕵️‍♂️ Misi Detektif Cilik
+            </div>
+            <h2 class="text-2xl md:text-4xl font-extrabold font-heading text-purple-950 mb-3">
+                Selamat Datang, Detektif Seni!
+            </h2>
+            <p class="text-slate-600 text-sm md:text-base max-w-xl mx-auto mb-6">
+                Kota Seni sedang dalam bahaya! Banyak benda di sekitar dan karya seni kehilangan rahasianya. Bantu Game Master memecahkan 5 kasus misteri menggunakan **Unsur Rupa** dan **Prinsip Desain**!
+            </p>
+
+            <!-- Player Input Form -->
+            <div class="max-w-md mx-auto bg-purple-50 p-5 rounded-2xl border border-purple-200 mb-6 text-left">
+                <label for="player-name" class="block font-heading text-sm text-purple-900 mb-2">Masukkan Nama Detektifmu:</label>
+                <input type="text" id="player-name" placeholder="Contoh: Detektif Maya" class="w-full px-4 py-3 rounded-xl border-2 border-purple-300 focus:border-purple-600 focus:outline-none font-bold text-slate-700 bg-white mb-4">
+
+                <label class="block font-heading text-sm text-purple-900 mb-2">Pilih Avatar Detektif:</label>
+                <div class="grid grid-cols-3 gap-3">
+                    <button type="button" onclick="selectAvatar('boy1')" id="avatar-boy1" class="avatar-option p-3 rounded-xl border-2 border-purple-300 bg-white hover:bg-purple-100 transition flex flex-col items-center gap-1">
+                        <span class="text-3xl">🕵️‍♂️</span>
+                        <span class="text-xs font-bold text-slate-700">Alex</span>
+                    </button>
+                    <button type="button" onclick="selectAvatar('girl1')" id="avatar-girl1" class="avatar-option p-3 rounded-xl border-2 border-purple-300 bg-white hover:bg-purple-100 transition flex flex-col items-center gap-1">
+                        <span class="text-3xl">🕵️‍♀️</span>
+                        <span class="text-xs font-bold text-slate-700">Maya</span>
+                    </button>
+                    <button type="button" onclick="selectAvatar('boy2')" id="avatar-boy2" class="avatar-option p-3 rounded-xl border-2 border-purple-300 bg-white hover:bg-purple-100 transition flex flex-col items-center gap-1">
+                        <span class="text-3xl">🧑‍🎨</span>
+                        <span class="text-xs font-bold text-slate-700">Bimo</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Start Button -->
+            <button onclick="startGame()" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-extrabold text-lg rounded-2xl shadow-lg hover:shadow-xl transform active:scale-95 transition duration-200 flex items-center justify-center gap-3 mx-auto">
+                <i class="fa-solid fa-play text-yellow-300"></i>
+                Mulai Pecahkan Kasus!
+            </button>
+        </section>
+
+        <!-- SCREEN 2: GAMEPLAY (DYNAMIC CASE LEVEL) -->
+        <section id="screen-gameplay" class="hidden glass-card rounded-3xl p-5 md:p-8 shadow-2xl border-t-8 border-purple-500">
+            
+            <!-- Level Progress Header -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-purple-100">
+                <div class="flex items-center gap-3">
+                    <span id="current-avatar-icon" class="text-3xl bg-purple-100 p-2 rounded-xl">🕵️‍♂️</span>
+                    <div>
+                        <h3 id="player-display-name" class="font-bold font-heading text-purple-900 text-sm md:text-base">Detektif</h3>
+                        <p id="level-title" class="text-xs text-purple-600 font-semibold">Kasus 1 dari 5</p>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="flex-grow max-w-xs mx-auto sm:mx-0">
+                    <div class="flex justify-between text-xs font-bold text-purple-700 mb-1">
+                        <span>Kemajuan Misi</span>
+                        <span id="progress-percent">20%</span>
+                    </div>
+                    <div class="w-full bg-purple-100 h-3 rounded-full overflow-hidden p-0.5 border border-purple-200">
+                        <div id="progress-bar" class="bg-gradient-to-r from-yellow-400 to-pink-500 h-full rounded-full transition-all duration-500" style="width: 20%;"></div>
+                    </div>
+                </div>
+
+                <!-- Star Score Badge -->
+                <div class="bg-amber-100 text-amber-800 border border-amber-300 px-3 py-1.5 rounded-xl font-bold font-heading text-sm flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-star text-amber-500"></i>
+                    <span id="score-display">0</span> Bintang
+                </div>
+            </div>
+
+            <!-- Game Master Chatbox & Narrative Area -->
+            <div class="bg-gradient-to-r from-purple-900 to-indigo-900 text-white rounded-2xl p-4 md:p-5 mb-5 shadow-inner flex flex-col md:flex-row gap-4 items-start">
+                <div class="flex-shrink-0 flex items-center gap-3 md:flex-col md:items-center">
+                    <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-yellow-400 text-purple-950 flex items-center justify-center text-2xl md:text-3xl font-extrabold border-2 border-white shadow-md">
+                        🧙‍♂️
+                    </div>
+                    <span class="font-heading text-xs text-yellow-300 font-bold bg-purple-800/80 px-2 py-0.5 rounded-full">Game Master</span>
+                </div>
+                <div class="flex-grow">
+                    <div id="case-location" class="inline-block bg-pink-500/30 text-pink-200 text-xs px-2.5 py-0.5 rounded-md font-bold mb-1 border border-pink-400/30">
+                        📍 Lokasi: Ruang Kelas
+                    </div>
+                    <p id="case-story" class="text-sm md:text-base leading-relaxed text-purple-100">
+                        <!-- Story text injected here -->
+                    </p>
+                </div>
+            </div>
+
+            <!-- Case Visual Canvas / Art Illustration Area -->
+            <div class="bg-slate-50 border-2 border-purple-200 rounded-2xl p-4 mb-5 flex flex-col items-center justify-center min-h-[180px] shadow-sm relative overflow-hidden">
+                <div class="absolute top-2 left-2 bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-md font-bold">
+                    🔍 Bukti Visual Seni
+                </div>
+                <div id="visual-container" class="w-full flex items-center justify-center py-2">
+                    <!-- SVG illustration will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Question & Challenge Block -->
+            <div class="mb-5">
+                <h4 id="question-text" class="font-heading text-base md:text-lg text-purple-950 font-bold mb-3 flex items-start gap-2">
+                    <span class="text-pink-500 text-xl">❓</span>
+                    <span>Pertanyaan Kasus...</span>
+                </h4>
+
+                <!-- Options Grid -->
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <!-- Dynamic option buttons -->
+                </div>
+            </div>
+
+            <!-- Helper Action Row: Hint & Reset -->
+            <div class="flex justify-between items-center pt-2 border-t border-purple-100">
+                <button onclick="showHint()" class="text-xs md:text-sm font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-300 px-3 py-2 rounded-xl transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-lightbulb text-amber-500"></i> Minta Petunjuk (Hint)
+                </button>
+                <div class="text-xs text-slate-500 italic">
+                    Jawab benar untuk mendapat +20 Bintang!
+                </div>
+            </div>
+
+        </section>
+
+        <!-- SCREEN 3: EDUCATIONAL FEEDBACK MODAL (POPUPS) -->
+        <div id="modal-feedback" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+            <div class="glass-card bg-white max-w-lg w-full rounded-3xl p-6 shadow-2xl border-4 border-purple-400 text-center transform scale-95 transition-all">
+                
+                <div id="feedback-icon" class="w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl mb-3 shadow-lg">
+                    ✨
+                </div>
+
+                <h3 id="feedback-title" class="text-2xl font-extrabold font-heading text-purple-950 mb-2">
+                    Hebat Sekali, Detektif!
+                </h3>
+
+                <p id="feedback-message" class="text-slate-600 text-sm mb-4">
+                    Kamu berhasil menebak dengan tepat!
+                </p>
+
+                <!-- Educational Explanation Box -->
+                <div class="bg-purple-50 border-l-4 border-purple-600 p-4 rounded-r-2xl text-left mb-6">
+                    <h4 class="font-heading font-bold text-purple-900 text-xs uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-graduation-cap text-purple-600"></i> Tahukah Kamu? (Konsep Seni Rupa)
+                    </h4>
+                    <p id="feedback-edu" class="text-xs md:text-sm text-slate-700 leading-relaxed">
+                        <!-- Edu explanation here -->
+                    </p>
+                </div>
+
+                <button id="btn-next-level" onclick="nextLevel()" class="w-full py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                    <span>Lanjut ke Kasus Berikutnya</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- HINT MODAL -->
+        <div id="modal-hint" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+            <div class="glass-card bg-white max-w-md w-full rounded-3xl p-6 shadow-2xl border-4 border-amber-400 text-center">
+                <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-3">
+                    💡
+                </div>
+                <h3 class="text-xl font-bold font-heading text-amber-900 mb-2">Petunjuk Detektif</h3>
+                <p id="hint-text" class="text-slate-600 text-sm mb-5 leading-relaxed bg-amber-50 p-3 rounded-xl border border-amber-200">
+                    <!-- Hint content -->
+                </p>
+                <button onclick="closeHint()" class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-extrabold rounded-xl shadow-md transition">
+                    Mengerti, Terima Kasih!
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: END GAME & CERTIFICATE -->
+        <section id="screen-end" class="hidden glass-card rounded-3xl p-6 md:p-8 shadow-2xl border-t-8 border-yellow-400 text-center animate-fade-in">
+            <div class="w-24 h-24 bg-gradient-to-tr from-yellow-300 to-amber-500 text-white rounded-full flex items-center justify-center text-5xl mx-auto mb-4 shadow-xl border-4 border-white animate-bounce-slow">
+                🏆
+            </div>
+
+            <h2 class="text-3xl md:text-4xl font-extrabold font-heading text-purple-950 mb-1">
+                Misi Selesai!
+            </h2>
+            <p class="text-purple-600 font-bold text-sm md:text-base mb-6">
+                Selamat! Kamu telah berhasil memecahkan semua kasus seni rupa.
+            </p>
+
+            <!-- Final Result Certificate Card -->
+            <div class="bg-gradient-to-b from-amber-50 to-orange-50 border-4 border-amber-300 rounded-3xl p-6 max-w-lg mx-auto shadow-inner mb-6 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-amber-200/50 rounded-full blur-2xl"></div>
+                
+                <span class="text-xs font-bold text-amber-700 tracking-widest uppercase mb-1 block">Sertifikat Kelulusan Detektif</span>
+                <h3 id="cert-player-name" class="text-2xl font-extrabold font-heading text-purple-900 mb-1">
+                    Detektif Maya
+                </h3>
+                <div class="w-24 h-1 bg-amber-400 mx-auto rounded-full mb-3"></div>
+
+                <p class="text-xs text-slate-600 mb-4">
+                    Telah menguasai Unsur Rupa (Garis, Bentuk, Warna, Tekstur, Ruang) dan Prinsip Desain (Keseimbangan, Proporsi, Irama, Kesatuan).
+                </p>
+
+                <div class="grid grid-cols-2 gap-3 bg-white p-3 rounded-2xl border border-amber-200 mb-4">
+                    <div class="text-center">
+                        <span class="text-xs text-slate-500 block">Total Bintang</span>
+                        <span id="final-score" class="text-2xl font-extrabold font-heading text-amber-500">100 ⭐</span>
+                    </div>
+                    <div class="text-center">
+                        <span class="text-xs text-slate-500 block">Gelar Kehormatan</span>
+                        <span id="final-title" class="text-sm font-extrabold font-heading text-purple-800">Master Detektif Desain</span>
+                    </div>
+                </div>
+
+                <div id="badge-collection" class="flex justify-center gap-2 text-2xl pt-2 border-t border-amber-200/60">
+                    <span title="Master Garis">🎨</span>
+                    <span title="Pakar Tekstur">🔍</span>
+                    <span title="Raja Keseimbangan">⚖️</span>
+                    <span title="Penyelarasa Irama">🎵</span>
+                    <span title="Suhu Proporsi">🏛️</span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row justify-center gap-3">
+                <button onclick="restartGame()" class="px-6 py-3.5 bg-purple-600 hover:bg-purple-700 text-white font-extrabold rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>Main Lagi</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="max-w-4xl mx-auto w-full text-center mt-6 text-purple-200 text-xs font-semibold">
+        <p>© Media Pembelajaran Interaktif Seni Rupa SD Kelas 5 • Kurikulum Merdeka</p>
+    </footer>
+
+    <script>
+        /* WEB AUDIO SYNTHESIZER (NO EXTERNAL AUDIO FILES NEEDED) */
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+
+            playCorrect() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                osc.frequency.setValueAtTime(1046.50, now + 0.3); // C6
+
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.6);
+            }
+
+            playWrong() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now); // A3
+                osc.frequency.setValueAtTime(196, now + 0.15); // G3
+
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            }
+
+            playClick() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.08);
+            }
+        }
+
+        const sound = new SoundEngine();
+
+        function toggleSound() {
+            sound.enabled = !sound.enabled;
+            const icon = document.getElementById('sound-icon');
+            if (sound.enabled) {
+                icon.className = 'fa-solid fa-volume-high text-lg';
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark text-lg text-red-400';
+            }
+        }
+
+        /* GAME STATE VARIABLES */
+        let gameState = {
+            playerName: "Detektif",
+            avatar: "boy1",
+            avatarIcon: "🕵️‍♂️",
+            score: 0,
+            currentLevel: 0,
+            hasUsedHint: false
+        };
+
+        /* GAME CASES DATA (5 LEVELS) */
+        const caseData = [
+            {
+                id: 1,
+                location: "Ruang Kelas Seni",
+                title: "Kasus 1: Peta Misterius Garis dan Warna",
+                story: "Di meja guru, kamu menemukan peta petunjuk dengan dua jenis lukisan. Satu berupa garis bergelombang biru yang menenangkan, dan satu lagi garis zig-zag tajam merah yang penuh energi!",
+                svg: `
+                    <svg viewBox="0 0 400 120" class="w-full max-h-36 rounded-lg bg-indigo-950 p-2">
+                        <!-- Wavy line -->
+                        <path d="M 20 60 Q 60 20, 100 60 T 180 60" fill="none" stroke="#38bdf8" stroke-width="6" stroke-linecap="round"/>
+                        <text x="50" y="105" fill="#e0f2fe" font-size="12" font-weight="bold">Garis Bergelombang (Biru)</text>
+
+                        <!-- Zig-zag line -->
+                        <path d="M 220 80 L 250 30 L 280 80 L 310 30 L 340 80 L 370 30" fill="none" stroke="#ef4444" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                        <text x="250" y="105" fill="#fef2f2" font-size="12" font-weight="bold">Garis Zig-Zag (Merah)</text>
+                    </svg>
+                `,
+                question: "Manakah pasangan Garis dan Warna di bawah ini yang tepat menggambarkan kesan 'lembut & tenang' dan 'semangat & hangat'?",
+                options: [
+                    { id: 'A', text: "Garis zig-zag memberi kesan tenang, warna biru adalah warna hangat", correct: false },
+                    { id: 'B', text: "Garis bergelombang memberi kesan tenang/lembut, warna merah adalah warna hangat", correct: true },
+                    { id: 'C', text: "Garis lurus tebal memberi kesan lembut, warna hijau adalah warna panas", correct: false },
+                    { id: 'D', text: "Semua garis dan warna memiliki kesan yang persis sama", correct: false }
+                ],
+                hint: "Perhatikan garis ombak laut (bergelombang) terasa santai, sedangkan warna api (merah/kuning) disebut warna hangat!",
+                edu: "<b>Unsur Garis & Warna:</b> Garis bergelombang memberikan kesan dinamis, lembut, dan tenang. Warna Merah, Kuning, dan Oranye termasuk kelompok <i>Warna Hangat</i> (memberi kesan semangat), sedangkan Biru dan Hijau adalah <i>Warna Dingin</i> (sejuk & tenang)."
+            },
+            {
+                id: 2,
+                location: "Taman Sekolah & Kantin",
+                title: "Kasus 2: Misteri Rabaan & Pandangan Mata",
+                story: "Kamu mengamati dua benda: Batang pohon tua yang kulitnya berlekuk kasar, dan poster bergambar batu karang di dinding. Saat poster batu tersebut diusap, permukaannya terasa sangat halus!",
+                svg: `
+                    <svg viewBox="0 0 400 120" class="w-full max-h-36 rounded-lg bg-emerald-950 p-2">
+                        <!-- Real Texture Tree -->
+                        <rect x="30" y="20" width="120" height="80" rx="10" fill="#78350f" stroke="#fef3c7" stroke-width="2"/>
+                        <path d="M 40 30 Q 90 50, 40 70 M 80 20 Q 130 60, 80 90 M 110 30 Q 70 70, 110 95" fill="none" stroke="#451a03" stroke-width="4"/>
+                        <text x="35" y="112" fill="#fef3c7" font-size="11" font-weight="bold">Kulit Pohon Asli (Disentuh Kasar)</text>
+
+                        <!-- Visual Texture Picture -->
+                        <rect x="240" y="20" width="120" height="80" rx="10" fill="#0284c7" stroke="#e0f2fe" stroke-width="2"/>
+                        <circle cx="280" cy="50" r="15" fill="#38bdf8" opacity="0.6"/>
+                        <circle cx="320" cy="70" r="20" fill="#0369a1" opacity="0.8"/>
+                        <text x="220" y="112" fill="#e0f2fe" font-size="11" font-weight="bold">Gambar Lukisan (Dilihat Kasar, Ditempel Halus)</text>
+                    </svg>
+                `,
+                question: "Disebut apakah jenis TEKSTUR pada poster yang gambarnya tampak kasar tetapi saat disentuh ternyata terasa halus?",
+                options: [
+                    { id: 'A', text: "Tekstur Nyata", correct: false },
+                    { id: 'B', text: "Tekstur Semu (Tekstur Maya)", correct: true },
+                    { id: 'C', text: "Tekstur Kasar Asli", correct: false },
+                    { id: 'D', text: "Bentuk Geometris", correct: false }
+                ],
+                hint: "Kata 'Semu' berarti tidak nyata / pura-pura. Mata melihatnya bertekstur, tapi tangan merasakannya berbeda!",
+                edu: "<b>Unsur Tekstur:</b> Tekstur adalah nilai raba suatu permukaan. <i>Tekstur Nyata</i> jika kesan penglihatan sama dengan rabaan (seperti kulit pohon). <i>Tekstur Semu</i> jika kesan penglihatan berbeda dengan rabaan (seperti gambar batu di kertas halus)."
+            },
+            {
+                id: 3,
+                location: "Taman Kota",
+                title: "Kasus 3: Rahasia Gapura Gerbang Taman",
+                story: "Di depan Taman Kota terdapat gapura megah. Jika kita membelah gapura ini tepat di tengah dengan garis bayangan, hiasan dan ukuran di sebelah kiri dan sebelah kanan terlihat PERSIS SAMA!",
+                svg: `
+                    <svg viewBox="0 0 400 120" class="w-full max-h-36 rounded-lg bg-slate-900 p-2">
+                        <!-- Symmetrical Gate -->
+                        <path d="M 120 100 L 120 40 L 200 20 L 280 40 L 280 100" fill="none" stroke="#f59e0b" stroke-width="6"/>
+                        <line x1="200" y1="10" x2="200" y2="105" stroke="#ec4899" stroke-width="2" stroke-dasharray="4"/>
+                        <circle cx="150" cy="55" r="12" fill="#38bdf8"/>
+                        <circle cx="250" cy="55" r="12" fill="#38bdf8"/>
+                        <rect x="135" y="75" width="30" height="25" fill="#10b981"/>
+                        <rect x="235" y="75" width="30" height="25" fill="#10b981"/>
+                        <text x="130" y="115" fill="#fef3c7" font-size="11" font-weight="bold">Sisi Kiri = Sisi Kanan (Seimbang Cermin)</text>
+                    </svg>
+                `,
+                question: "Prinsip Desain **Keseimbangan (Balance)** jenis apakah yang digunakan pada gapura dengan sisi kiri dan kanan persis sama ini?",
+                options: [
+                    { id: 'A', text: "Keseimbangan Simetris", correct: true },
+                    { id: 'B', text: "Keseimbangan Asimetris", correct: false },
+                    { id: 'C', text: "Keseimbangan Memutar (Radial)", correct: false },
+                    { id: 'D', text: "Keseimbangan Acak", correct: false }
+                ],
+                hint: "Ingat kata 'Simetris' sama seperti cermin (kiri dan kanan sama persis)!",
+                edu: "<b>Prinsip Keseimbangan (Balance):</b> Keseimbangan membuat karya seni terasa stabil. <i>Keseimbangan Simetris</i> terjadi jika bagian kiri dan kanan sama persis. Jika kiri dan kanan berbeda bentuk namun berat visualnya seimbang, disebut <i>Keseimbangan Asimetris</i>."
+            },
+            {
+                id: 4,
+                location: "Galeri Seni Daerah",
+                title: "Kasus 4: Pagar Hias Berpola Bunga",
+                story: "Di dalam galeri, ada ukiran pagar kayu dengan pola bunga berulang: Bunga Kecil ➔ Bunga Sedang ➔ Bunga Besar ➔ Bunga Kecil ➔ Bunga Sedang ➔ Bunga Besar, secara berurutan dan indah.",
+                svg: `
+                    <svg viewBox="0 0 400 120" class="w-full max-h-36 rounded-lg bg-purple-950 p-2">
+                        <!-- Rhythm Repeat Pattern -->
+                        <g transform="translate(30, 30)">
+                            <circle cx="20" cy="30" r="10" fill="#f43f5e"/>
+                            <circle cx="70" cy="30" r="18" fill="#f43f5e"/>
+                            <circle cx="140" cy="30" r="26" fill="#f43f5e"/>
+                            
+                            <circle cx="210" cy="30" r="10" fill="#f43f5e"/>
+                            <circle cx="260" cy="30" r="18" fill="#f43f5e"/>
+                            <circle cx="330" cy="30" r="26" fill="#f43f5e"/>
+                        </g>
+                        <text x="100" y="110" fill="#f1f5f9" font-size="12" font-weight="bold">Pengulangan Unsur Secara Teratur (Pola Berulang)</text>
+                    </svg>
+                `,
+                question: "Pengulangan unsur rupa secara teratur dan berulang-ulang seperti pada pola ukiran bunga tersebut dinamakan prinsip...",
+                options: [
+                    { id: 'A', text: "Proporsi", correct: false },
+                    { id: 'B', text: "Irama (Rhythm)", correct: true },
+                    { id: 'C', text: "Gelap Terang", correct: false },
+                    { id: 'D', text: "Tekstur Nyata", correct: false }
+                ],
+                hint: "Seperti irama musik yang memiliki ketukan berulang secara teratur!",
+                edu: "<b>Prinsip Irama (Rhythm):</b> Irama adalah pengulangan satu atau lebih unsur rupa (seperti bentuk, garis, atau warna) secara teratur dan terus menerus sehingga menciptakan kesan gerakan visual yang indah."
+            },
+            {
+                id: 5,
+                location: "Museum Seni Rupa Raksasa",
+                title: "Kasus 5: Lukisan Pemandangan Indah",
+                story: "Kasus Terakhir! Kamu melihat lukisan pemandangan gunung. Pohon yang berada di dekat pengamat digambar BESAR dan JELAS, sedangkan pohon yang jauh digambar KECIL dan AGAK GELAP/SAMAR.",
+                svg: `
+                    <svg viewBox="0 0 400 120" class="w-full max-h-36 rounded-lg bg-sky-950 p-2">
+                        <!-- Landscape Proportion & Depth -->
+                        <polygon points="150,90 230,30 310,90" fill="#334155"/>
+                        <!-- Near tree -->
+                        <path d="M 60 100 L 60 50 M 45 60 L 60 30 L 75 60 Z" stroke="#22c55e" stroke-width="6" fill="#15803d"/>
+                        <text x="25" y="112" fill="#86efac" font-size="10" font-weight="bold">Pohon Dekat (Besar)</text>
+                        <!-- Far tree -->
+                        <path d="M 200 85 L 200 65 M 192 70 L 200 55 L 208 70 Z" stroke="#166534" stroke-width="3" fill="#14532d"/>
+                        <text x="180" y="100" fill="#86efac" font-size="10" font-weight="bold">Pohon Jauh (Kecil)</text>
+                    </svg>
+                `,
+                question: "Mengapa perbandingan ukuran pohon di dekat dan di jauh berbeda? Prinsip dan Unsur apa yang membuat lukisan terasa memiliki kedalaman ruang?",
+                options: [
+                    { id: 'A', text: "Prinsip Proporsi (ukuran) dan Unsur Ruang/Gelap-Terang", correct: true },
+                    { id: 'B', text: "Karena pelukisnya kehabisan cat warna hijau", correct: false },
+                    { id: 'C', text: "Hanya menggunakan unsur garis lurus saja", correct: false },
+                    { id: 'D', text: "Prinsip Keseimbangan Simetris murni", correct: false }
+                ],
+                hint: "Proporsi mengatur perbandingan ukuran benda, sedangkan gelap-terang dan ukuran memberi kesan jarak/ruang!",
+                edu: "<b>Prinsip Proporsi & Unsur Ruang:</b> <i>Proporsi</i> adalah perbandingan ukuran antara bagian objek. Menggambar benda dekat lebih besar dan benda jauh lebih kecil menggabungkan proporsi dan kesan <i>Ruang/Gelap-Terang</i> sehingga lukisan 2D tampak memiliki kedalaman 3D!"
+            }
+        ];
+
+        /* AVATAR SELECTION LOGIC */
+        function selectAvatar(avatarKey) {
+            sound.playClick();
+            gameState.avatar = avatarKey;
+            
+            document.querySelectorAll('.avatar-option').forEach(el => {
+                el.classList.remove('border-purple-600', 'bg-purple-100', 'ring-2', 'ring-purple-400');
+            });
+
+            const selectedBtn = document.getElementById(`avatar-${avatarKey}`);
+            if (selectedBtn) {
+                selectedBtn.classList.add('border-purple-600', 'bg-purple-100', 'ring-2', 'ring-purple-400');
+            }
+
+            if (avatarKey === 'boy1') gameState.avatarIcon = "🕵️‍♂️";
+            if (avatarKey === 'girl1') gameState.avatarIcon = "🕵️‍♀️";
+            if (avatarKey === 'boy2') gameState.avatarIcon = "🧑‍🎨";
+        }
+
+        /* START GAME */
+        function startGame() {
+            sound.playClick();
+            const nameInput = document.getElementById('player-name').value.trim();
+            if (nameInput !== "") {
+                gameState.playerName = nameInput;
+            } else {
+                gameState.playerName = "Detektif Cilik";
+            }
+
+            // Update UI elements
+            document.getElementById('player-display-name').innerText = gameState.playerName;
+            document.getElementById('current-avatar-icon').innerText = gameState.avatarIcon;
+            document.getElementById('top-stats').classList.remove('hidden');
+
+            // Switch Screen
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-gameplay').classList.remove('hidden');
+
+            // Load Level 0
+            gameState.currentLevel = 0;
+            gameState.score = 0;
+            loadLevel(gameState.currentLevel);
+        }
+
+        /* LOAD LEVEL DATA */
+        function loadLevel(levelIndex) {
+            const levelData = caseData[levelIndex];
+            gameState.hasUsedHint = false;
+
+            // Update Header & Progress
+            document.getElementById('level-title').innerText = `Kasus ${levelIndex + 1} dari ${caseData.length}`;
+            const progress = Math.round(((levelIndex + 1) / caseData.length) * 100);
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('progress-percent').innerText = `${progress}%`;
+            
+            // Update Score Display
+            updateScoreUI();
+
+            // Inject Content
+            document.getElementById('case-location').innerText = `📍 Lokasi: ${levelData.location}`;
+            document.getElementById('case-story').innerText = levelData.story;
+            document.getElementById('visual-container').innerHTML = levelData.svg;
+            document.getElementById('question-text').innerHTML = `<span class="text-pink-500 text-xl">❓</span> <span>${levelData.question}</span>`;
+
+            // Options Container
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            levelData.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-2xl border-2 border-purple-200 bg-white hover:bg-purple-50 hover:border-purple-400 active:scale-98 transition duration-150 shadow-sm flex items-start gap-3 font-semibold text-slate-700 text-sm md:text-base";
+                btn.onclick = () => checkAnswer(opt.correct, levelData);
+
+                btn.innerHTML = `
+                    <span class="w-7 h-7 rounded-xl bg-purple-100 text-purple-800 font-extrabold flex items-center justify-center flex-shrink-0 text-xs border border-purple-300">
+                        ${opt.id}
+                    </span>
+                    <span class="pt-0.5">${opt.text}</span>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        /* CHECK ANSWER LOGIC */
+        function checkAnswer(isCorrect, levelData) {
+            if (isCorrect) {
+                sound.playCorrect();
+                // Add Score
+                const points = gameState.hasUsedHint ? 10 : 20;
+                gameState.score += points;
+                updateScoreUI();
+
+                // Show Success Modal
+                document.getElementById('feedback-icon').className = 'w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl mb-3 shadow-lg bg-emerald-100 text-emerald-600 border-4 border-emerald-300';
+                document.getElementById('feedback-icon').innerText = '🎉';
+                document.getElementById('feedback-title').innerText = 'Jawaban Tepat, Detektif!';
+                document.getElementById('feedback-message').innerHTML = `Kamu mendapatkan <span class="font-bold text-amber-500">+${points} Bintang</span>! Misi kasus ini berhasil terpecahkan!`;
+                document.getElementById('feedback-edu').innerHTML = levelData.edu;
+                
+                document.getElementById('modal-feedback').classList.remove('hidden');
+            } else {
+                sound.playWrong();
+                // Show Incorrect Feedback
+                document.getElementById('feedback-icon').className = 'w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl mb-3 shadow-lg bg-rose-100 text-rose-600 border-4 border-rose-300';
+                document.getElementById('feedback-icon').innerText = '🧐';
+                document.getElementById('feedback-title').innerText = 'Hampir Benar!';
+                document.getElementById('feedback-message').innerText = 'Petunjuk bukti seni belum cocok. Coba periksa petunjuk atau baca lagi pertanyaannya!';
+                document.getElementById('feedback-edu').innerHTML = "<b>Tips Detektif:</b> Gunakan tombol 'Minta Petunjuk (Hint)' di bawah jika kamu ragu!";
+                
+                document.getElementById('modal-feedback').classList.remove('hidden');
+            }
+        }
+
+        /* NEXT LEVEL OR END GAME */
+        function nextLevel() {
+            sound.playClick();
+            document.getElementById('modal-feedback').classList.add('hidden');
+
+            gameState.currentLevel++;
+            if (gameState.currentLevel < caseData.length) {
+                loadLevel(gameState.currentLevel);
+            } else {
+                finishGame();
+            }
+        }
+
+        /* HINT MODAL LOGIC */
+        function showHint() {
+            sound.playClick();
+            gameState.hasUsedHint = true;
+            const levelData = caseData[gameState.currentLevel];
+            document.getElementById('hint-text').innerText = levelData.hint;
+            document.getElementById('modal-hint').classList.remove('hidden');
+        }
+
+        function closeHint() {
+            sound.playClick();
+            document.getElementById('modal-hint').classList.add('hidden');
+        }
+
+        function updateScoreUI() {
+            document.getElementById('score-display').innerText = gameState.score;
+            document.getElementById('score-display-top').innerText = gameState.score;
+        }
+
+        /* FINISH GAME & CERTIFICATE */
+        function finishGame() {
+            document.getElementById('screen-gameplay').classList.add('hidden');
+            document.getElementById('screen-end').classList.remove('hidden');
+
+            document.getElementById('cert-player-name').innerText = `${gameState.avatarIcon} ${gameState.playerName}`;
+            document.getElementById('final-score').innerText = `${gameState.score} ⭐`;
+
+            // Assign Title based on score
+            let title = "Detektif Seni Muda";
+            if (gameState.score >= 90) {
+                title = "Master Detektif Desain 🏆";
+            } else if (gameState.score >= 70) {
+                title = "Pakar Seni Handal 🎨";
+            }
+            document.getElementById('final-title').innerText = title;
+        }
+
+        function restartGame() {
+            sound.playClick();
+            document.getElementById('screen-end').classList.add('hidden');
+            document.getElementById('screen-welcome').classList.remove('hidden');
+        }
+
+        // Default Avatar selection on load
+        selectAvatar('boy1');
+    </script>
+</body>
+</html>
